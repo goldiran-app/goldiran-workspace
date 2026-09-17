@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.pnpm-debug.log
+vendor/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+!.env.example
+!**/.env.example
+
+# Build output
+.next/
+out/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+apps/web/.next/
+apps/api/bin/
+tmp/
+*.exe
+*.test
+
+# Go
+*.out
+
+# Docker / database volumes
+data/
+postgres-data/
+docker-data/
+
+# Logs and caches
+*.log
+.cache/
+.turbo/
+.eslintcache
+.prettiercache
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+
+# Test / local artifacts
+*.sqlite
+*.db

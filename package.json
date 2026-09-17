@@ -1,0 +1,13 @@
+{
+  "name": "goldiran-workspace",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "lint": "pnpm --filter web lint",
+    "typecheck": "pnpm --filter web typecheck",
+    "test": "pnpm --filter web test",
+    "format": "pnpm --filter web format",
+    "format:check": "pnpm --filter web format:check"
+  }
+}

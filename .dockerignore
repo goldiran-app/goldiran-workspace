@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+data
+postgres-data
+coverage
+*.md
+.github
+apps/web/.next
+**/.DS_Store

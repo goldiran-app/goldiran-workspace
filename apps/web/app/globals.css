@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  font-family: Vazirmatn, "Segoe UI", Tahoma, sans-serif;
+}
+
+body {
+  background: #f6f4f1;
+  color: #1f1c18;
+}
