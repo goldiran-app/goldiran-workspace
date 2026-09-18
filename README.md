@@ -1,102 +1,52 @@
-# Goldiran Workspace
+# Goldiran
 
-Lightweight Go and Next.js monorepo for managing **projects**, **initiatives**, and **issues**.
+The customer-facing Goldiran application, beginning with a clear view of the buy and sell price per gram before a customer trades. The home page is Persian and right-to-left, with customer-perspective labels, toman amounts, 18-karat gold units, a Tehran timestamp, and explicit loading, stale, and unavailable states.
 
-Initiatives can contain projects. Projects can contain issues. The UI is intentionally simple, fast, and RTL-ready. Auth, permissions, notifications, and integrations are out of scope for this starter.
+This repository is the product foundation for **Deliver Live Gold Pricing**. The unrelated project/initiative/issue management starter, its Go CRUD API, database schema, and seed data have been removed. The app now uses Next.js App Router, React, TypeScript, and a same-origin price endpoint; no database is needed for this slice.
 
-## Stack
+## Run locally
 
-- Backend: Go, Chi, PostgreSQL, SQL migrations
-- Frontend: Next.js App Router, TypeScript, Tailwind CSS, pnpm
-- Local development: Docker Compose
-
-## Repository structure
-
-```text
-apps/api          Go API, migrations, and tests
-apps/web          Next.js app
-infra             Notes for local infrastructure
-docker-compose.yml
-```
-
-## Prerequisites
-
-- Docker and Docker Compose
-- Optional for local (non-Docker) development:
-  - Go 1.23+
-  - Node.js 22+
-  - pnpm 9
-  - PostgreSQL 16
-
-## Local setup with Docker
+Use Node.js 22+ and pnpm 9.15.0:
 
 ```bash
-docker compose up --build
-```
-
-Then open:
-
-- Web: http://localhost:3000
-- API health: http://localhost:8080/health
-
-Compose starts PostgreSQL, runs API migrations and seed data on boot, then starts the frontend.
-
-## Environment configuration
-
-Copy the example files if you run services outside Docker:
-
-```bash
-cp apps/api/.env.example apps/api/.env
+pnpm install --frozen-lockfile
 cp apps/web/.env.example apps/web/.env.local
+pnpm dev:web
 ```
 
-| Variable | Where | Default |
-| --- | --- | --- |
-| `DATABASE_URL` | API | `postgres://goldiran:goldiran@localhost:5432/goldiran?sslmode=disable` |
-| `HTTP_ADDR` | API | `:8080` |
-| `CORS_ORIGIN` | API | `http://localhost:3000` |
-| `NEXT_PUBLIC_API_URL` | Web (browser) | `http://localhost:8080` |
-| `API_URL` | Web (server) | `http://localhost:8080` locally, `http://api:8080` in Compose |
+Open http://localhost:3000. Without an approved price feed, the page intentionally shows that prices are unavailable. It never substitutes sample prices on the customer route.
 
-Do not commit `.env` files.
+For design review, set `GOLDIRAN_ENABLE_PREVIEW=true` in `apps/web/.env.local`, restart the app, and open http://localhost:3000/preview. This opt-in route has a persistent sample-data banner and controls for all four display states. Its fixed amounts and timestamps are illustrative, not market data. Leave it disabled in customer deployments.
 
-## Local setup without Docker
+## Price data
 
-1. Start PostgreSQL and create database `goldiran`.
-2. From `apps/api`: `go run ./cmd/server`
-3. From repo root: `pnpm install && pnpm --filter web dev`
+`GET /api/prices` returns a validated, uncached price snapshot. Set the server-only `GOLDIRAN_PRICE_FEED_URL` to an approved endpoint returning the normalized quote described in [the presentation specification](docs/price-presentation.md). No provider has been selected in the product context yet. This adapter consumes already calculated prices; source normalization, spreads, fees, and trading execution are separate work.
 
-## Test and lint
+The browser checks every 15 seconds while visible and supports manual refresh. Both amounts disappear on an invalid response, failed refresh, or expiry. The quote timestamp comes from the feed and never changes merely because the page refreshed. Provisional defaults of 18-karat gold, toman, and a maximum age of 60 seconds need confirmation before launch.
+
+## Validate
 
 ```bash
 pnpm lint
 pnpm typecheck
 pnpm test
 pnpm format:check
-
-cd apps/api
-gofmt -l .
-go test ./...
+pnpm --filter web build
 ```
 
-## API
+Tests cover amount/unit validation, expiry boundaries, source failures, formatting, automatic and manual refresh, request timeout, background-tab expiry, and cleanup. CI runs these checks and a production build.
 
-All JSON responses use `{ "data": ... }` or `{ "error": "..." }`.
+## Docker
 
-| Method | Path | Description |
-| --- | --- | --- |
-| GET | `/health` | Liveness |
-| GET | `/api/v1/stats` | Counts |
-| GET, POST | `/api/v1/initiatives` | List / create initiatives |
-| GET, PUT, DELETE | `/api/v1/initiatives/{id}` | Initiative CRUD |
-| GET | `/api/v1/initiatives/{id}/projects` | Projects in an initiative |
-| GET, POST | `/api/v1/projects` | List / create projects |
-| GET, PUT, DELETE | `/api/v1/projects/{id}` | Project CRUD |
-| GET | `/api/v1/projects/{id}/issues` | Issues in a project |
-| GET, POST | `/api/v1/issues` | List / create issues |
-| GET, PUT, DELETE | `/api/v1/issues/{id}` | Issue CRUD |
+```bash
+docker compose up --build
+```
 
-Issue `status` values: `open`, `in_progress`, `done`.
+Open http://localhost:3000. Set `GOLDIRAN_PRICE_FEED_URL` and optionally `GOLDIRAN_ENABLE_PREVIEW` in the shell or the root Compose `.env`; Compose passes them to the app at runtime. The former starter database is no longer used. Existing Docker volumes are not modified or deleted.
+
+## Product scope
+
+The current slice defines and implements the price presentation. It does not place orders, lock prices, or claim that a displayed price includes final transaction fees. There are no charts, historical analytics, alerts, account balances, or invented trading activity. See [the specification](docs/price-presentation.md) for decisions, acceptance criteria, and the remaining source-integration and trade-journey work.
 
 ## License
 

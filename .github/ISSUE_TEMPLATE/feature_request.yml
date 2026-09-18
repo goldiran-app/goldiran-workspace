@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest an improvement for Goldiran workspace
+description: Suggest an improvement for Goldiran
 labels: [enhancement]
 body:
   - type: textarea
