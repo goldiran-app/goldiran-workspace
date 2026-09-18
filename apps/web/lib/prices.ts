@@ -15,6 +15,8 @@ export type PriceSnapshot =
   | { status: "stale"; updatedAt: string }
   | { status: "unavailable" };
 
+export type PriceDisplayState = PriceSnapshot | { status: "loading" };
+
 // Conservative presentation defaults; confirm with the approved source before launch.
 export const MAX_PRICE_AGE_MS = 60_000;
 export const REFRESH_INTERVAL_MS = 15_000;

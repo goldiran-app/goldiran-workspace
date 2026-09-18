@@ -1,6 +1,6 @@
 # Goldiran
 
-The customer-facing Goldiran application, beginning with a clear view of the buy and sell price per gram before a customer trades. The home page is Persian and right-to-left, with customer-perspective labels, toman amounts, 18-karat gold units, a Tehran timestamp, and explicit loading, stale, and unavailable states.
+The customer-facing Goldiran application, beginning with a clear view of the buy and sell price per gram before a customer trades. The home page is Persian and right-to-left, with customer-perspective labels, toman amounts, 18-karat gold units, a labeled source timestamp in Tehran time, refresh context, and explicit loading, stale, and unavailable states.
 
 This repository is the product foundation for **Deliver Live Gold Pricing**. The unrelated project/initiative/issue management starter, its Go CRUD API, database schema, and seed data have been removed. The app now uses Next.js App Router, React, TypeScript, and a same-origin price endpoint; no database is needed for this slice.
 

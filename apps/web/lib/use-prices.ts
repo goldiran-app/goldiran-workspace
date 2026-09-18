@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { parseSnapshot, REFRESH_INTERVAL_MS, type PriceSnapshot } from "./prices";
+import { parseSnapshot, REFRESH_INTERVAL_MS, type PriceDisplayState } from "./prices";
 
-export type PriceDisplayState = PriceSnapshot | { status: "loading" };
+export type { PriceDisplayState };
 
 export function usePrices(enabled = true) {
   const [snapshot, setSnapshot] = useState<PriceDisplayState>({ status: "loading" });
