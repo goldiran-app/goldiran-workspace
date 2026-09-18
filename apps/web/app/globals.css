@@ -318,7 +318,13 @@ h1 > span {
 }
 .timestamp-block p {
   margin: 0;
+  font-size: 12px;
+}
+.timestamp-label {
+  font-weight: 650;
   font-size: 11px;
+  color: var(--ink);
+  margin-bottom: 2px;
 }
 .timezone {
   color: var(--muted);
@@ -462,6 +468,25 @@ details[open] summary > span {
   margin: 0 9px;
   color: #a6af9f;
 }
+.price-missing {
+  display: block;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: 0;
+  color: var(--muted);
+  padding-top: 18px;
+  line-height: 1.6;
+}
+.trade-availability {
+  margin: 8px 0 0;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.9;
+}
+.trade-availability strong {
+  display: inline;
+  font-weight: 650;
+}
 .price-skeleton {
   display: inline-block;
   height: 40px;
@@ -470,6 +495,60 @@ details[open] summary > span {
   background: #183e3510;
   border-radius: 8px;
   animation: pulse 1.4s ease-in-out infinite alternate;
+}
+.comprehension-panel {
+  margin-top: 28px;
+  padding: 20px 22px;
+  border: 1px dashed #ac822d;
+  border-radius: 12px;
+  background: #fffdf6;
+}
+.comprehension-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.comprehension-panel h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+}
+.comprehension-panel > div > p,
+.comprehension-heading p {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.comprehension-toggle {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border: 1px solid #bca774;
+  border-radius: 8px;
+  background: white;
+  font-size: 11px;
+  min-height: 38px;
+}
+.comprehension-toggle[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: white;
+}
+.comprehension-panel ol {
+  margin: 18px 0 0;
+  padding: 0 22px 0 0;
+}
+.comprehension-panel li + li {
+  margin-top: 14px;
+}
+.comprehension-panel li p {
+  margin: 0;
+  font-size: 13px;
+}
+.comprehension-answer {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
 }
 .preview-banner {
   padding: 15px 18px;
@@ -583,6 +662,9 @@ details[open] summary > span {
   }
   .preview-banner {
     align-items: flex-start;
+    flex-direction: column;
+  }
+  .comprehension-heading {
     flex-direction: column;
   }
 }

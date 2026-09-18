@@ -16,7 +16,7 @@ pnpm dev:web
 
 Open http://localhost:3000. Without an approved price feed, the page intentionally shows that prices are unavailable. It never substitutes sample prices on the customer route.
 
-For design review, set `GOLDIRAN_ENABLE_PREVIEW=true` in `apps/web/.env.local`, restart the app, and open http://localhost:3000/preview. This opt-in route has a persistent sample-data banner and controls for all four display states. Its fixed amounts and timestamps are illustrative, not market data. Leave it disabled in customer deployments.
+For design review and GOL-10 comprehension sessions, set `GOLDIRAN_ENABLE_PREVIEW=true` in `apps/web/.env.local`, restart the app, and open http://localhost:3000/preview. This opt-in route has a persistent sample-data banner, controls for all four display states, and the customer questions to ask. Its fixed amounts and timestamps are illustrative, not market data. Leave it disabled in customer deployments. See [the comprehension protocol](docs/customer-comprehension.md).
 
 ## Price data
 
@@ -34,7 +34,7 @@ pnpm format:check
 pnpm --filter web build
 ```
 
-Tests cover amount/unit validation, expiry boundaries, source failures, formatting, automatic and manual refresh, request timeout, background-tab expiry, and cleanup. CI runs these checks and a production build.
+Tests cover amount/unit validation, expiry boundaries, source failures, formatting, automatic and manual refresh, request timeout, background-tab expiry, cleanup, and the five customer comprehension questions (pay, receive, unit, timestamp, trade availability). CI runs these checks and a production build.
 
 ## Docker
 
@@ -46,7 +46,7 @@ Open http://localhost:3000. Set `GOLDIRAN_PRICE_FEED_URL` and optionally `GOLDIR
 
 ## Product scope
 
-The current slice defines and implements the price presentation. It does not place orders, lock prices, or claim that a displayed price includes final transaction fees. There are no charts, historical analytics, alerts, account balances, or invented trading activity. See [the specification](docs/price-presentation.md) for decisions, acceptance criteria, and the remaining source-integration and trade-journey work.
+The current slice defines the price presentation and the customer comprehension check for those prices. It does not place orders, lock prices, or claim that a displayed price includes final transaction fees. There are no charts, historical analytics, alerts, account balances, or invented trading activity. See [the specification](docs/price-presentation.md) and [the comprehension protocol](docs/customer-comprehension.md) for decisions, acceptance criteria, and the remaining source-integration and trade-journey work.
 
 ## License
 

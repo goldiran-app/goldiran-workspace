@@ -32,10 +32,10 @@ Charts, history, alerts, and watchlists are outside the MVP. GOL-5/6 concern tim
 
 | State | Amounts | Context and actions |
 | --- | --- | --- |
-| Loading | Skeletons, no zero or sample amount | Explain that prices are being received |
-| Available | Both validated amounts | Show source timestamp, Tehran timezone, source label, and refresh control |
-| Stale | Withhold both amounts | Explain expiry; retain last source timestamp for context; allow retry |
-| Unavailable | Withhold both amounts | Explain that no valid price is available; allow retry |
+| Loading | Skeletons, no zero, sample, or «missing» amount | Explain that prices are being received; trade is not possible yet |
+| Available | Both validated amounts | Show source timestamp, Tehran timezone, source label, refresh control, and that the quote is informational |
+| Stale | Show «قیمت موجود نیست» in place of both amounts | Explain expiry and that the quote is not tradable; retain last source timestamp; allow retry |
+| Unavailable | Show «قیمت موجود نیست» in place of both amounts | Explain that no valid price is available or tradable; allow retry |
 
 A failed refresh removes the previous amounts. A quote expires locally even if a request is pending. Returning to a visible tab immediately rechecks expiry and requests an update. Automatic requests pause while the tab is hidden. Browser requests time out after eight seconds; upstream requests time out after five seconds. Requests are not overlapped, and unmounting aborts the current request. Available price expiry is the earlier of the feed's `validUntil` and `updatedAt + 60 seconds`.
 
@@ -82,4 +82,4 @@ Verify:
 - Keyboard users can reach refresh and expand the guide; status changes are announced without repeatedly announcing prices every poll.
 - API and lifecycle tests cover invalid data, expiry, failed requests, retry, and background-tab return.
 
-Actual customer comprehension validation remains GOL-10: ask customers to identify what they would pay/receive for one gram, name the unit and last update time, and explain whether they can rely on a stale/unavailable quote before progressing to trading implementation.
+Customer comprehension validation is GOL-10. The five questions, scoring, and `/preview` research walkthrough are in [the comprehension protocol](customer-comprehension.md). Ask customers to identify what they would pay/receive for one gram, name the unit and last source time, and explain whether they can rely on a stale/unavailable quote before progressing to trading implementation.

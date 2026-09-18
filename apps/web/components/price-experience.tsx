@@ -1,37 +1,15 @@
 "use client";
 
 import { formatPrice, formatTimestamp } from "@/lib/prices";
+import { priceCopy } from "@/lib/price-copy";
 import { usePrices, type PriceDisplayState } from "@/lib/use-prices";
 
-const statusCopy = {
-  loading: {
-    label: "در حال دریافت قیمت",
-    title: "قیمت‌ها در حال دریافت هستند",
-    description: "چند لحظه صبر کنید تا آخرین قیمت خرید و فروش دریافت شود.",
-  },
-  available: {
-    label: "قیمت به‌روز",
-    title: "قیمت خرید و فروش، کنار هم",
-    description: "هر دو قیمت برای یک گرم طلای ۱۸ عیار هستند و از نگاه شما نمایش داده می‌شوند.",
-  },
-  stale: {
-    label: "قیمت نیاز به به‌روزرسانی دارد",
-    title: "اعتبار قیمت قبلی به پایان رسیده است",
-    description:
-      "برای جلوگیری از تصمیم‌گیری با قیمت قدیمی، مبلغ‌ها تا دریافت قیمت معتبر نمایش داده نمی‌شوند.",
-  },
-  unavailable: {
-    label: "قیمت در دسترس نیست",
-    title: "در حال حاضر قیمت معتبری نداریم",
-    description:
-      "دریافت قیمت ممکن نشد. کمی بعد دوباره تلاش کنید؛ تا آن زمان، قیمت خرید و فروش نمایش داده نمی‌شود.",
-  },
-};
+const sides = ["buy", "sell"] as const;
 
 export function PriceExperience({ previewState }: { previewState?: PriceDisplayState }) {
   const { snapshot, refreshing, refresh } = usePrices(previewState === undefined);
   const state = previewState ?? snapshot;
-  const copy = statusCopy[state.status];
+  const copy = priceCopy.statuses[state.status];
   const quote = state.status === "available" ? state.quote : null;
   const updatedAt = quote?.updatedAt ?? (state.status === "stale" ? state.updatedAt : null);
 
@@ -46,7 +24,8 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
             قیمت هر گرم <span>طلا</span>
           </h1>
           <p className="intro-description">
-            قیمت خرید و فروش را روشن ببینید، با اطمینان تصمیم بگیرید.
+            قیمت خرید و فروش را روشن ببینید، زمان آن را بشناسید، و بدانید آیا برای معامله قابل
+            اعتماد است.
           </p>
         </div>
         <div className="gold-spec">
@@ -54,8 +33,8 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
             Au
           </span>
           <div>
-            <strong>طلای ۱۸ عیار</strong>
-            <span>خلوص ۷۵۰ · مبنای هر دو قیمت</span>
+            <strong>{priceCopy.gold}</strong>
+            <span>{priceCopy.goldDetail}</span>
           </div>
         </div>
       </section>
@@ -66,12 +45,12 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
             <span className="status-dot" aria-hidden="true" />
             {copy.label}
           </div>
-          <span className="board-unit">واحد قیمت: تومان / گرم</span>
+          <span className="board-unit">{priceCopy.boardUnit}</span>
         </div>
         <div className="price-grid" aria-busy={state.status === "loading"}>
-          {(["buy", "sell"] as const).map((side) => {
-            const buy = side === "buy";
-            const amount = quote ? (buy ? quote.buyPerGram : quote.sellPerGram) : null;
+          {sides.map((side) => {
+            const amount = quote ? (side === "buy" ? quote.buyPerGram : quote.sellPerGram) : null;
+            const sideCopy = priceCopy.sides[side];
             return (
               <article
                 className={`price-card ${side}`}
@@ -80,32 +59,25 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
               >
                 <div className="card-heading">
                   <span className="direction-icon" aria-hidden="true">
-                    {buy ? "↙" : "↗"}
+                    {side === "buy" ? "↙" : "↗"}
                   </span>
-                  <span className="card-kicker">
-                    {buy ? "از گلدایران می‌خرید" : "به گلدایران می‌فروشید"}
-                  </span>
+                  <span className="card-kicker">{sideCopy.kicker}</span>
                 </div>
-                <h2 id={`${side}-title`}>{buy ? "قیمت خرید شما" : "قیمت فروش شما"}</h2>
+                <h2 id={`${side}-title`}>{sideCopy.title}</h2>
                 <p className="price-amount">
-                  {amount === null && <span className="sr-only">قیمت موجود نیست</span>}
                   {state.status === "loading" ? (
                     <span className="price-skeleton" />
+                  ) : amount === null ? (
+                    <span className="price-missing">{priceCopy.missingAmount}</span>
                   ) : (
-                    <bdi aria-hidden={amount === null ? true : undefined}>
-                      {amount === null ? "—" : formatPrice(amount)}
-                    </bdi>
+                    <bdi>{formatPrice(amount)}</bdi>
                   )}
                 </p>
                 <p className="price-unit">
-                  تومان <span>/ هر گرم</span>
+                  {priceCopy.unit} <span>{priceCopy.unitDetail}</span>
                 </p>
                 <div className="card-rule" />
-                <p className="card-description">
-                  {buy
-                    ? "مبلغی که برای خرید یک گرم طلا می‌پردازید."
-                    : "مبلغی که در ازای فروش یک گرم طلا دریافت می‌کنید."}
-                </p>
+                <p className="card-description">{sideCopy.description}</p>
               </article>
             );
           })}
@@ -116,24 +88,34 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
               ◷
             </span>
             <div>
+              <p className="timestamp-label" id="price-timestamp-label">
+                {priceCopy.timestampLabel}
+              </p>
               <p>
                 {updatedAt ? (
                   <>
-                    آخرین به‌روزرسانی:{" "}
-                    <time dateTime={updatedAt}>{formatTimestamp(updatedAt)}</time>
-                    <span className="timezone"> · به وقت تهران</span>
+                    <time dateTime={updatedAt} aria-labelledby="price-timestamp-label">
+                      {formatTimestamp(updatedAt)}
+                    </time>
+                    <span className="timezone"> · {priceCopy.timezone}</span>
                   </>
                 ) : (
-                  "زمان به‌روزرسانی پس از دریافت قیمت نمایش داده می‌شود."
+                  priceCopy.timestampPending
                 )}
               </p>
               <p className="refresh-context">
-                بررسی خودکار هر ۱۵ ثانیه در زمان باز بودن صفحه
-                {quote ? ` · منبع: ${quote.source}` : ""}
+                {state.status === "stale"
+                  ? priceCopy.staleTimestampNote
+                  : priceCopy.timestampSourceNote}
+              </p>
+              <p className="refresh-context">
+                {quote ? `منبع: ${quote.source} · ` : ""}
+                {priceCopy.refreshContext}
               </p>
             </div>
           </div>
           <button
+            type="button"
             className="refresh-button"
             onClick={() => void refresh()}
             disabled={refreshing || previewState !== undefined}
@@ -153,6 +135,9 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
           <div>
             <h3>{copy.title}</h3>
             <p>{copy.description}</p>
+            <p className="trade-availability">
+              <strong>{priceCopy.tradeQuestion}</strong> {copy.trade}
+            </p>
           </div>
         </div>
       </section>
@@ -173,18 +158,16 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
               تفاوت قیمت خرید و فروش چیست؟<span aria-hidden="true">+</span>
             </summary>
             <p>
-              «قیمت خرید شما» مبلغ پرداختی شما به گلدایران است. «قیمت فروش شما» مبلغ دریافتی شما از
-              گلدایران است. این دو قیمت ممکن است متفاوت باشند.
+              «{priceCopy.sides.buy.title}» مبلغ پرداختی شما به گلدایران است. «
+              {priceCopy.sides.sell.title}» مبلغ دریافتی شما از گلدایران است. این دو قیمت ممکن است
+              متفاوت باشند.
             </p>
           </details>
           <details>
             <summary>
               قیمت برای چه مقدار و چه عیاری است؟<span aria-hidden="true">+</span>
             </summary>
-            <p>
-              هر مبلغ برای یک گرم طلای ۱۸ عیار با خلوص ۷۵۰ است و به تومان نمایش داده می‌شود. هر
-              تومان برابر با ۱۰ ریال است.
-            </p>
+            <p>{priceCopy.unitAnswer} هر تومان برابر با ۱۰ ریال است.</p>
           </details>
           <details>
             <summary>
@@ -200,8 +183,9 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
               اگر قیمت به‌روز نباشد چه می‌شود؟<span aria-hidden="true">+</span>
             </summary>
             <p>
-              قیمت قدیمی یا نامعتبر نمایش داده نمی‌شود. زمان آخرین قیمت، در صورت وجود، باقی می‌ماند.
-              برای دیدن قیمت معتبر از «به‌روزرسانی قیمت» استفاده کنید.
+              قیمت قدیمی یا نامعتبر نمایش داده نمی‌شود و برای معامله اعتبار ندارد. زمان آخرین قیمت
+              منبع، در صورت وجود، باقی می‌ماند. برای دیدن قیمت معتبر از «به‌روزرسانی قیمت» استفاده
+              کنید.
             </p>
           </details>
         </div>
