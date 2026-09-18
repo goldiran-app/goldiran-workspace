@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a problem with Goldiran workspace
+description: Report a problem with Goldiran
 labels: [bug]
 body:
   - type: textarea

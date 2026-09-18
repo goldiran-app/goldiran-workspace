@@ -2,7 +2,6 @@
 node_modules/
 .pnpm-store/
 .pnpm-debug.log
-vendor/
 
 # Environment and secrets
 .env
@@ -21,19 +20,7 @@ build/
 coverage/
 *.tsbuildinfo
 apps/web/.next/
-apps/api/bin/
 tmp/
-*.exe
-*.test
-
-# Go
-*.out
-
-# Docker / database volumes
-data/
-postgres-data/
-docker-data/
-
 # Logs and caches
 *.log
 .cache/
