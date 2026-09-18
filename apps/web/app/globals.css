@@ -212,9 +212,11 @@ h1 > span {
 .status-available {
   color: #237152;
 }
-.status-stale,
-.status-unavailable {
+.status-stale {
   color: #946421;
+}
+.status-unavailable {
+  color: #8a4a3a;
 }
 .status-loading {
   color: var(--muted);
@@ -280,6 +282,15 @@ h1 > span {
   letter-spacing: -1px;
   overflow-wrap: anywhere;
 }
+.price-missing {
+  display: block;
+  color: var(--muted);
+  font-size: clamp(18px, 2.4vw, 24px);
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1.8;
+  padding-top: 10px;
+}
 .price-unit {
   font-size: 14px;
   margin: 0;
@@ -315,6 +326,12 @@ h1 > span {
   font-size: 24px;
   line-height: 1.5;
   color: var(--muted);
+}
+.timestamp-label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 .timestamp-block p {
   margin: 0;
@@ -363,9 +380,14 @@ h1 > span {
   background: #f7f8f4;
   border-radius: 10px;
 }
-.notice-stale,
-.notice-unavailable {
+.notice-stale {
   background: #fcf6e9;
+}
+.notice-unavailable {
+  background: #f8eee9;
+}
+.notice-unavailable .notice-icon {
+  color: #8a4a3a;
 }
 .notice-icon {
   display: grid;

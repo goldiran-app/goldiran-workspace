@@ -1,39 +1,16 @@
 "use client";
 
-import { formatPrice, formatTimestamp } from "@/lib/prices";
-import { usePrices, type PriceDisplayState } from "@/lib/use-prices";
+import { freshnessCopy, freshnessView } from "@/lib/price-freshness";
+import { formatPrice, type PriceDisplayState } from "@/lib/prices";
+import { usePrices } from "@/lib/use-prices";
 
-const statusCopy = {
-  loading: {
-    label: "در حال دریافت قیمت",
-    title: "قیمت‌ها در حال دریافت هستند",
-    description: "چند لحظه صبر کنید تا آخرین قیمت خرید و فروش دریافت شود.",
-  },
-  available: {
-    label: "قیمت به‌روز",
-    title: "قیمت خرید و فروش، کنار هم",
-    description: "هر دو قیمت برای یک گرم طلای ۱۸ عیار هستند و از نگاه شما نمایش داده می‌شوند.",
-  },
-  stale: {
-    label: "قیمت نیاز به به‌روزرسانی دارد",
-    title: "اعتبار قیمت قبلی به پایان رسیده است",
-    description:
-      "برای جلوگیری از تصمیم‌گیری با قیمت قدیمی، مبلغ‌ها تا دریافت قیمت معتبر نمایش داده نمی‌شوند.",
-  },
-  unavailable: {
-    label: "قیمت در دسترس نیست",
-    title: "در حال حاضر قیمت معتبری نداریم",
-    description:
-      "دریافت قیمت ممکن نشد. کمی بعد دوباره تلاش کنید؛ تا آن زمان، قیمت خرید و فروش نمایش داده نمی‌شود.",
-  },
-};
+const sides = ["buy", "sell"] as const;
 
 export function PriceExperience({ previewState }: { previewState?: PriceDisplayState }) {
   const { snapshot, refreshing, refresh } = usePrices(previewState === undefined);
   const state = previewState ?? snapshot;
-  const copy = statusCopy[state.status];
+  const freshness = freshnessView(state);
   const quote = state.status === "available" ? state.quote : null;
-  const updatedAt = quote?.updatedAt ?? (state.status === "stale" ? state.updatedAt : null);
 
   return (
     <>
@@ -46,7 +23,7 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
             قیمت هر گرم <span>طلا</span>
           </h1>
           <p className="intro-description">
-            قیمت خرید و فروش را روشن ببینید، با اطمینان تصمیم بگیرید.
+            قیمت خرید و فروش را روشن ببینید، زمان آن را بشناسید، و وضعیت اعتبار قیمت را دنبال کنید.
           </p>
         </div>
         <div className="gold-spec">
@@ -62,16 +39,21 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
 
       <section id="prices" className="price-board" aria-label="قیمت خرید و فروش طلا">
         <div className="board-heading">
-          <div className={`status-badge status-${state.status}`} role="status">
+          <div className={`status-badge status-${freshness.status}`} role="status">
             <span className="status-dot" aria-hidden="true" />
-            {copy.label}
+            {freshness.label}
           </div>
           <span className="board-unit">واحد قیمت: تومان / گرم</span>
         </div>
-        <div className="price-grid" aria-busy={state.status === "loading"}>
-          {(["buy", "sell"] as const).map((side) => {
+        <div className="price-grid" aria-busy={freshness.status === "loading"}>
+          {sides.map((side) => {
             const buy = side === "buy";
-            const amount = quote ? (buy ? quote.buyPerGram : quote.sellPerGram) : null;
+            const amount =
+              freshness.amountsVisible && quote
+                ? buy
+                  ? quote.buyPerGram
+                  : quote.sellPerGram
+                : null;
             return (
               <article
                 className={`price-card ${side}`}
@@ -88,13 +70,12 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
                 </div>
                 <h2 id={`${side}-title`}>{buy ? "قیمت خرید شما" : "قیمت فروش شما"}</h2>
                 <p className="price-amount">
-                  {amount === null && <span className="sr-only">قیمت موجود نیست</span>}
-                  {state.status === "loading" ? (
+                  {freshness.status === "loading" ? (
                     <span className="price-skeleton" />
+                  ) : amount === null ? (
+                    <span className="price-missing">{freshnessCopy.missingAmount}</span>
                   ) : (
-                    <bdi aria-hidden={amount === null ? true : undefined}>
-                      {amount === null ? "—" : formatPrice(amount)}
-                    </bdi>
+                    <bdi>{formatPrice(amount)}</bdi>
                   )}
                 </p>
                 <p className="price-unit">
@@ -116,43 +97,48 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
               ◷
             </span>
             <div>
+              <p className="timestamp-label" id="price-timestamp-label">
+                {freshnessCopy.timestampLabel}
+              </p>
               <p>
-                {updatedAt ? (
+                {freshness.updatedAt ? (
                   <>
-                    آخرین به‌روزرسانی:{" "}
-                    <time dateTime={updatedAt}>{formatTimestamp(updatedAt)}</time>
-                    <span className="timezone"> · به وقت تهران</span>
+                    <time dateTime={freshness.updatedAt} aria-labelledby="price-timestamp-label">
+                      {freshness.timestampText}
+                    </time>
+                    <span className="timezone"> · {freshnessCopy.timezone}</span>
                   </>
                 ) : (
-                  "زمان به‌روزرسانی پس از دریافت قیمت نمایش داده می‌شود."
+                  freshness.timestampText
                 )}
               </p>
-              <p className="refresh-context">
-                بررسی خودکار هر ۱۵ ثانیه در زمان باز بودن صفحه
-                {quote ? ` · منبع: ${quote.source}` : ""}
-              </p>
+              {freshness.timestampNote ? (
+                <p className="refresh-context">{freshness.timestampNote}</p>
+              ) : null}
+              <p className="refresh-context">{freshness.refreshContext}</p>
             </div>
           </div>
           <button
+            type="button"
             className="refresh-button"
             onClick={() => void refresh()}
             disabled={refreshing || previewState !== undefined}
           >
             <span aria-hidden="true">↻</span>
             {previewState !== undefined
-              ? "نمونه نمایشی"
+              ? freshnessCopy.refreshPreview
               : refreshing
-                ? "در حال بررسی…"
-                : "به‌روزرسانی قیمت"}
+                ? freshnessCopy.refreshBusy
+                : freshnessCopy.refreshIdle}
           </button>
         </div>
-        <div className={`price-notice notice-${state.status}`}>
+        <div className={`price-notice notice-${freshness.status}`}>
           <span className="notice-icon" aria-hidden="true">
-            {state.status === "available" ? "✓" : "i"}
+            {freshness.status === "available" ? "✓" : "i"}
           </span>
           <div>
-            <h3>{copy.title}</h3>
-            <p>{copy.description}</p>
+            <h3>{freshness.title}</h3>
+            <p>{freshness.description}</p>
           </div>
         </div>
       </section>
@@ -200,8 +186,9 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
               اگر قیمت به‌روز نباشد چه می‌شود؟<span aria-hidden="true">+</span>
             </summary>
             <p>
-              قیمت قدیمی یا نامعتبر نمایش داده نمی‌شود. زمان آخرین قیمت، در صورت وجود، باقی می‌ماند.
-              برای دیدن قیمت معتبر از «به‌روزرسانی قیمت» استفاده کنید.
+              قیمت قدیمی یا نامعتبر نمایش داده نمی‌شود و برای معامله اعتبار ندارد. زمان آخرین قیمت
+              منبع، در صورت وجود، باقی می‌ماند. برای دیدن قیمت معتبر از «به‌روزرسانی قیمت» استفاده
+              کنید.
             </p>
           </details>
         </div>

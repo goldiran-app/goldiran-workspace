@@ -9,7 +9,7 @@ This specification and the `/preview` implementation establish the first custome
 - [MVP Pricing Engine and Safeguards — Product Spec](https://linear.app/goldiran/document/mvp-pricing-engine-and-safeguards-product-spec-8905bf9dce47): publish only valid, fresh prices; preserve the timestamp; withhold missing, invalid, or stale data.
 - [Price Source Integration — MVP Delivery Notes](https://linear.app/goldiran/document/price-source-integration-mvp-delivery-notes-d90ec335dc3b): the approved source, normalization method, and refresh expectation are still decisions to make.
 
-Charts, history, alerts, and watchlists are outside the MVP. GOL-5/6 concern timestamp and state design, GOL-7 source connection, GOL-8/9 implementation, and GOL-10 customer comprehension validation. This foundation supplies basic responsive and failure handling so the initial presentation can be reviewed coherently; it does not claim provider integration or customer research is complete.
+Charts, history, alerts, and watchlists are outside the MVP. GOL-5/6 concern timestamp and state design, GOL-7 source connection, GOL-8 buy/sell presentation, GOL-9 freshness and unavailable states, and GOL-10 customer comprehension validation. The live display now shows the source timestamp, refresh cadence, and explicit loading, stale, and unavailable explanations; it does not claim provider integration or customer research is complete.
 
 ## Presentation decisions
 
@@ -78,7 +78,7 @@ Verify:
 
 - Buy/sell perspective and units are understandable without color cues.
 - Both amounts, full timestamp, and refresh context are readable at desktop and mobile widths, including 320px.
-- Loading, stale, and unavailable states never display tradable-looking amounts or order actions.
+- Loading, stale, and unavailable states never display tradable-looking amounts or order actions. Stale quotes keep the last source timestamp and say the quote has expired. Unavailable and loading states say the source time is not yet known.
 - Keyboard users can reach refresh and expand the guide; status changes are announced without repeatedly announcing prices every poll.
 - API and lifecycle tests cover invalid data, expiry, failed requests, retry, and background-tab return.
 
