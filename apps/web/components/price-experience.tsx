@@ -111,25 +111,25 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
           })}
         </div>
         <div className="refresh-row">
-          <div className="timestamp-block">
+          <div className="timestamp-block" aria-label="زمینه قیمت">
             <span className="clock-icon" aria-hidden="true">
               ◷
             </span>
             <div>
-              <p>
+              <p className="timestamp-label">آخرین قیمت دریافتی</p>
+              <p className="timestamp-value">
                 {updatedAt ? (
                   <>
-                    آخرین به‌روزرسانی:{" "}
                     <time dateTime={updatedAt}>{formatTimestamp(updatedAt)}</time>
                     <span className="timezone"> · به وقت تهران</span>
                   </>
                 ) : (
-                  "زمان به‌روزرسانی پس از دریافت قیمت نمایش داده می‌شود."
+                  "پس از دریافت قیمت نمایش داده می‌شود"
                 )}
               </p>
               <p className="refresh-context">
-                بررسی خودکار هر ۱۵ ثانیه در زمان باز بودن صفحه
-                {quote ? ` · منبع: ${quote.source}` : ""}
+                بررسی خودکار هر ۱۵ ثانیه هنگام باز بودن صفحه
+                {quote ? ` · منبع قیمت: ${quote.source}` : ""}
               </p>
             </div>
           </div>
@@ -146,7 +146,7 @@ export function PriceExperience({ previewState }: { previewState?: PriceDisplayS
                 : "به‌روزرسانی قیمت"}
           </button>
         </div>
-        <div className={`price-notice notice-${state.status}`}>
+        <div className={`price-notice notice-${state.status}`} aria-live="polite">
           <span className="notice-icon" aria-hidden="true">
             {state.status === "available" ? "✓" : "i"}
           </span>
