@@ -36,7 +36,10 @@ describe("customer price presentation", () => {
     expect(buy.getByText("/ هر گرم")).toBeTruthy();
     expect(sell.getByText("/ هر گرم")).toBeTruthy();
     expect(screen.getByText("طلای ۱۸ عیار")).toBeTruthy();
+    expect(screen.getByText("آخرین قیمت دریافتی")).toBeTruthy();
     expect(screen.getByText(/به وقت تهران/)).toBeTruthy();
+    expect(screen.getByText(/بررسی خودکار هر ۱۵ ثانیه/)).toBeTruthy();
+    expect(screen.getByText(/منبع قیمت: Sample/)).toBeTruthy();
     expect(document.querySelector("time")?.getAttribute("datetime")).toBe("2026-09-17T08:30:00Z");
   });
 

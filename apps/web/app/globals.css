@@ -320,8 +320,16 @@ h1 > span {
   margin: 0;
   font-size: 11px;
 }
+.timestamp-label {
+  color: var(--muted);
+  font-size: 10px !important;
+}
+.timestamp-value {
+  font-weight: 600;
+}
 .timezone {
   color: var(--muted);
+  font-weight: 400;
 }
 .timestamp-block .refresh-context {
   margin-top: 4px;
